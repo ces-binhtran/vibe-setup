@@ -148,7 +148,6 @@ git commit -m "feat: implement GeminiProvider.generate() method"
   test: add unit tests for Document model
   docs: update README with quick start guide
   ```
-- Include `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
 
 **Before Committing:**
 - Run tests: `pytest`
@@ -262,6 +261,48 @@ async def similarity_search(
 3. **Check existing patterns** (reuse, don't reinvent)
 4. **Keep commits small and focused** (one logical change)
 5. **Run tests frequently** (catch issues early)
+6. **Use parallel agents when beneficial** (see below)
+
+### Parallel Agent Teamwork
+
+**When to Spawn Parallel Agents:**
+- Multiple independent sub-tasks can be done simultaneously
+- Complex task benefits from specialized focus
+- Want faster completion without sacrificing quality
+
+**Use `/superpowers:dispatching-parallel-agents` when:**
+- 2+ independent tasks with no shared state
+- Tasks can be worked on without sequential dependencies
+- Example: Implement LLM provider + Storage backend in parallel
+
+**Benefits:**
+- Faster task completion
+- Each agent focuses on one concern
+- Better quality through specialization
+- More efficient use of time
+
+**Example:**
+```
+Task: Build Phase 1.2 (LLM) + Phase 1.3 (Storage)
+→ Spawn 2 parallel agents:
+  - Agent 1: Implements BaseLLMProvider + GeminiProvider
+  - Agent 2: Implements BaseVectorStore + PostgresVectorStore
+→ Both complete independently, merge results
+```
+
+### Code Simplification & Quality
+
+**After Writing Code:**
+1. **Use `/code-simplifier` skill** to refine and simplify code
+   - Improves clarity and maintainability
+   - Removes unnecessary complexity
+   - Preserves all functionality
+   - Applies after implementation, before final commit
+
+**Example workflow:**
+```
+Write code → Tests pass → /code-simplifier → Review → Commit
+```
 
 ### Before Marking Complete
 
@@ -269,9 +310,10 @@ async def similarity_search(
 2. **Run full test suite** (`pytest`)
 3. **Check test coverage** (`pytest --cov`)
 4. **Run linters** (`black`, `ruff`, `mypy`)
-5. **Update documentation** (docstrings, README)
-6. **Commit all changes**
-7. **Use `/superpowers:verification-before-completion`**
+5. **Simplify code** (`/code-simplifier`)
+6. **Update documentation** (docstrings, README)
+7. **Commit all changes**
+8. **Use `/superpowers:verification-before-completion`**
 
 ### Common Pitfalls to Avoid
 
