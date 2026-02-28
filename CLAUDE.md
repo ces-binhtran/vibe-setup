@@ -265,18 +265,32 @@ async def similarity_search(
 
 ### Parallel Agent Teamwork
 
+**Claude Code has built-in parallel agent capabilities.** Use them to speed up independent tasks.
+
 **When to Spawn Parallel Agents:**
 - Multiple independent sub-tasks can be done simultaneously
 - Complex task benefits from specialized focus
 - Want faster completion without sacrificing quality
 
-**Use `/superpowers:dispatching-parallel-agents` when:**
+**How to Use Parallel Agents:**
+
+Option 1: **Manual with Task tool** (direct control)
+```python
+# Spawn multiple agents in parallel with a single message
+# containing multiple Task tool calls
+```
+
+Option 2: **Guided with skill** (orchestrated)
+- Use `/superpowers:dispatching-parallel-agents` for help coordinating
+- Skill helps identify independent tasks and manage agents
+
+**When to Use:**
 - 2+ independent tasks with no shared state
 - Tasks can be worked on without sequential dependencies
 - Example: Implement LLM provider + Storage backend in parallel
 
 **Benefits:**
-- Faster task completion
+- Faster task completion (2x-3x speedup)
 - Each agent focuses on one concern
 - Better quality through specialization
 - More efficient use of time
@@ -284,10 +298,10 @@ async def similarity_search(
 **Example:**
 ```
 Task: Build Phase 1.2 (LLM) + Phase 1.3 (Storage)
-→ Spawn 2 parallel agents:
-  - Agent 1: Implements BaseLLMProvider + GeminiProvider
-  - Agent 2: Implements BaseVectorStore + PostgresVectorStore
-→ Both complete independently, merge results
+→ Send single message with 2 Task tool calls in parallel:
+  - Task 1: Implement BaseLLMProvider + GeminiProvider
+  - Task 2: Implement BaseVectorStore + PostgresVectorStore
+→ Both agents work simultaneously, merge results when done
 ```
 
 ### Code Simplification & Quality
