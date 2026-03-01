@@ -3,6 +3,8 @@ name: vibe-rag-task-workflow
 description: Complete workflow for task execution from start to finish - ensures brainstorming, TDD, proper commits, and verification before completion
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-task-workflow.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Task Workflow
 
 Use this skill when starting ANY task or before marking a task complete.
