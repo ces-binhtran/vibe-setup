@@ -88,6 +88,41 @@ rag = RAGEngine(
 )
 ```
 
+## Pipeline Components
+
+Build custom RAG pipelines by composing components:
+
+```python
+from vibe_rag.pipeline import PipelineBuilder, PipelineContext
+from vibe_rag.retrievers import VectorRetriever
+from vibe_rag.storage import PostgresVectorStore
+from vibe_rag.providers import GeminiProvider
+
+# Setup components
+storage = PostgresVectorStore(collection_name="docs")
+provider = GeminiProvider(api_key="...")
+retriever = VectorRetriever(storage, provider, top_k=5)
+
+# Build pipeline
+pipeline = PipelineBuilder().add_component(retriever).build()
+
+# Execute
+context = PipelineContext(query="What is RAG?")
+for component in pipeline:
+    context = await component.process(context)
+
+# Access results
+print(f"Retrieved {len(context.documents)} documents")
+print(f"Metadata: {context.metadata}")
+```
+
+### Component Types
+
+- **Retrievers**: Fetch relevant documents (VectorRetriever)
+- **Transformers**: Modify queries or documents (coming soon)
+- **Rerankers**: Reorder retrieved documents (coming soon)
+- **Generators**: Produce final responses (coming soon)
+
 ## Architecture
 
 vibe-rag uses a three-layer architecture:
