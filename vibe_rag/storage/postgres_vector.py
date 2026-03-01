@@ -180,7 +180,7 @@ class PostgresVectorStore(BaseVectorStore):
             RetrievalError: If search fails
         """
         if not self._pool:
-            raise StorageError("Connection pool not initialized")
+            raise RetrievalError("Connection pool not initialized")
 
         try:
             async with self._pool.acquire() as conn:
