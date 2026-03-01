@@ -25,6 +25,18 @@ class BaseVectorStore(ABC):
         self.collection_name = collection_name
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """Initialize storage backend (create connections, tables, etc.).
+
+        This method must be called before using the vector store.
+        For implementations that don't need initialization, this can be a no-op.
+
+        Raises:
+            StorageError: If initialization fails
+        """
+        pass
+
+    @abstractmethod
     async def add_documents(
         self, documents: list[Document], embeddings: list[list[float]]
     ) -> list[str]:
@@ -70,5 +82,14 @@ class BaseVectorStore(ABC):
 
         Raises:
             StorageError: If deletion fails
+        """
+        pass
+
+    @abstractmethod
+    async def close(self) -> None:
+        """Close connections and cleanup resources.
+
+        This method should be called when the vector store is no longer needed.
+        For implementations that don't need cleanup, this can be a no-op.
         """
         pass
