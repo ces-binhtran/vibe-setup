@@ -140,7 +140,7 @@ class TestLangGraphE2E:
             llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=gemini_api_key)
             agent = create_react_agent(llm, tools=[rag_tool])
 
-            result = agent.invoke({"messages": [("user", "How much does the premium plan cost?")]})
+            result = await agent.ainvoke({"messages": [("user", "How much does the premium plan cost?")]})
 
             final_message = result["messages"][-1].content
             assert isinstance(final_message, str)

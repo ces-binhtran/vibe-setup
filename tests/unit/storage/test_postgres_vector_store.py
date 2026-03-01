@@ -229,7 +229,7 @@ async def test_similarity_search_metadata_filter_uses_jsonb_containment():
         # Parameters should contain JSONB-encoded filter
         # The filter {"type": "pdf"} should be passed as JSONB
         assert len(params) == 2  # [query_embedding, jsonb_filter]
-        assert params[0] == query_embedding
+        assert params[0] == "[" + ",".join(str(x) for x in query_embedding) + "]"
         # params[1] should be '{"type": "pdf"}' as a JSON string
         import json
         filter_param = json.loads(params[1])
