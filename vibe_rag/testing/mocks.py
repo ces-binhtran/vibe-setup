@@ -84,8 +84,13 @@ class MockVectorStore:
     - No external dependencies or setup required
     """
 
-    def __init__(self) -> None:
-        """Initialize in-memory storage."""
+    def __init__(self, collection_name: str = "default") -> None:
+        """Initialize in-memory storage.
+
+        Args:
+            collection_name: Name of the collection (for interface compatibility)
+        """
+        self.collection_name = collection_name
         self.documents: dict[str, list[tuple[Document, list[float]]]] = {}
 
     @property
@@ -93,14 +98,21 @@ class MockVectorStore:
         """Return storage backend identifier."""
         return "mock"
 
+    async def initialize(self) -> None:
+        """Initialize storage (no-op for mock)."""
+        pass
+
+    async def close(self) -> None:
+        """Close storage (no-op for mock)."""
+        pass
+
     async def add_documents(
-        self, documents: list[Document], collection_name: str, embeddings: list[list[float]]
+        self, documents: list[Document], embeddings: list[list[float]]
     ) -> list[str]:
         """Add documents with embeddings to collection.
 
         Args:
             documents: List of documents to add
-            collection_name: Name of the collection
             embeddings: List of embedding vectors (one per document)
 
         Returns:
@@ -116,13 +128,13 @@ class MockVectorStore:
             )
 
         # Initialize collection if needed
-        if collection_name not in self.documents:
-            self.documents[collection_name] = []
+        if self.collection_name not in self.documents:
+            self.documents[self.collection_name] = []
 
         # Store documents with their embeddings
         doc_ids = []
         for doc, embedding in zip(documents, embeddings):
-            self.documents[collection_name].append((doc, embedding))
+            self.documents[self.collection_name].append((doc, embedding))
             doc_ids.append(doc.id)
 
         return doc_ids
@@ -130,17 +142,15 @@ class MockVectorStore:
     async def similarity_search(
         self,
         query_embedding: list[float],
-        collection_name: str,
-        top_k: int = 5,
-        filters: Optional[dict] = None,
+        k: int = 5,
+        filter_metadata: Optional[dict] = None,
     ) -> list[Document]:
         """Search for similar documents using cosine similarity.
 
         Args:
             query_embedding: Query embedding vector
-            collection_name: Name of the collection to search
-            top_k: Number of top results to return
-            filters: Optional metadata filters
+            k: Number of top results to return
+            filter_metadata: Optional metadata filters
 
         Returns:
             List of similar documents with scores
@@ -149,15 +159,15 @@ class MockVectorStore:
             Simple cosine similarity implementation for testing
             Filters match exact metadata key-value pairs
         """
-        if collection_name not in self.documents:
+        if self.collection_name not in self.documents:
             return []
 
         # Calculate similarities
         results = []
-        for doc, embedding in self.documents[collection_name]:
+        for doc, embedding in self.documents[self.collection_name]:
             # Apply metadata filters if provided
-            if filters:
-                if not all(doc.metadata.get(key) == value for key, value in filters.items()):
+            if filter_metadata:
+                if not all(doc.metadata.get(key) == value for key, value in filter_metadata.items()):
                     continue
 
             # Simple cosine similarity
@@ -166,18 +176,14 @@ class MockVectorStore:
             doc_with_score = doc.model_copy(update={"score": similarity})
             results.append(doc_with_score)
 
-        # Sort by similarity score (descending) and return top_k
+        # Sort by similarity score (descending) and return top k
         results.sort(key=lambda d: d.score or 0.0, reverse=True)
-        return results[:top_k]
+        return results[:k]
 
-    async def delete_collection(self, collection_name: str) -> None:
-        """Delete an entire collection.
-
-        Args:
-            collection_name: Name of the collection to delete
-        """
-        if collection_name in self.documents:
-            del self.documents[collection_name]
+    async def delete_collection(self) -> None:
+        """Delete the entire collection."""
+        if self.collection_name in self.documents:
+            del self.documents[self.collection_name]
 
     @staticmethod
     def _cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
