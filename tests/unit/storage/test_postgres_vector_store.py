@@ -363,3 +363,23 @@ def test_invalid_collection_names_raise_configuration_error():
                 collection_name=name,
                 connection_string="postgresql://localhost/test",
             )
+
+
+@pytest.mark.asyncio
+async def test_context_manager_usage():
+    """PostgresVectorStore works with async context manager."""
+    pool, conn = create_mock_pool()
+
+    with patch("vibe_rag.storage.postgres_vector.asyncpg.create_pool", new_callable=AsyncMock) as mock_create_pool:
+        mock_create_pool.return_value = pool
+
+        # Test context manager usage
+        async with PostgresVectorStore(
+            collection_name="test_collection",
+            connection_string="postgresql://localhost/test"
+        ) as store:
+            # Verify pool was initialized
+            assert store._pool is pool
+
+        # Verify pool was closed
+        pool.close.assert_called_once()

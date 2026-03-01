@@ -23,12 +23,12 @@ class PostgresVectorStore(BaseVectorStore):
         vector_dimension: Dimension of embedding vectors (default: 768)
 
     Example:
-        >>> store = PostgresVectorStore(
+        >>> async with PostgresVectorStore(
         ...     collection_name="documents",
         ...     connection_string="postgresql://localhost/mydb"
-        ... )
-        >>> await store.initialize()
-        >>> await store.add_documents(docs, embeddings)
+        ... ) as store:
+        ...     await store.add_documents(docs, embeddings)
+        ...     results = await store.similarity_search(query)
     """
 
     def __init__(

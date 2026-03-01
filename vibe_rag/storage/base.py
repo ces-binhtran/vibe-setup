@@ -1,6 +1,7 @@
 """Base interface for vector storage backends."""
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 from vibe_rag.models import Document
 
@@ -12,8 +13,16 @@ class BaseVectorStore(ABC):
     consistent behavior across different storage systems (PostgreSQL + pgvector,
     Pinecone, Weaviate, etc.).
 
+    Supports async context manager protocol for automatic resource cleanup.
+
     Args:
         collection_name: Name of the collection/table to store vectors
+
+    Example:
+        >>> async with PostgresVectorStore(...) as store:
+        ...     await store.add_documents(docs, embeddings)
+        ...     results = await store.similarity_search(query)
+        # Automatic cleanup via close()
     """
 
     def __init__(self, collection_name: str):
@@ -93,3 +102,31 @@ class BaseVectorStore(ABC):
         For implementations that don't need cleanup, this can be a no-op.
         """
         pass
+
+    async def __aenter__(self) -> "BaseVectorStore":
+        """Enter async context manager - initializes the store.
+
+        Returns:
+            Self for use in 'async with' statements
+        """
+        await self.initialize()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any | None,
+    ) -> None:
+        """Exit async context manager - closes the store.
+
+        Args:
+            exc_type: Exception type (if any)
+            exc_val: Exception value (if any)
+            exc_tb: Exception traceback (if any)
+
+        Returns:
+            None (don't suppress exceptions)
+        """
+        await self.close()
+        return None
