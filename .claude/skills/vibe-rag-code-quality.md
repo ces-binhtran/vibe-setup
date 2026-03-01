@@ -36,8 +36,8 @@ Use this skill during code implementation to ensure quality.
 All vibe-rag code must meet these standards:
 
 - **Type hints everywhere** (Python 3.10+ syntax)
-- **Comprehensive docstrings** (Google style - see `/vibe-rag:documentation`)
-- **Error handling with custom exceptions** (see `/vibe-rag:error-handling`)
+- **Comprehensive docstrings** (Google style - see `.claude/skills/vibe-rag-documentation.md`)
+- **Error handling with custom exceptions** (see `.claude/skills/vibe-rag-error-handling.md`)
 - **Async/await for I/O operations** (database calls, API requests)
 - **Proper resource cleanup** (async context managers for connections)
 
