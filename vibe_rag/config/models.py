@@ -20,8 +20,8 @@ class LLMConfig(BaseModel):
 
     provider: Literal["gemini"] = "gemini"
     api_key: Optional[str] = None
-    model_name: str = "gemini-2.0-flash-exp"
-    embedding_model: str = "models/text-embedding-004"
+    model_name: str = "gemini-2.0-flash"
+    embedding_model: str = "models/gemini-embedding-001"
     generation_kwargs: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -150,8 +150,8 @@ class RAGConfig(BaseModel):
         Raises:
             ValueError: If dimensions don't match
         """
-        # Gemini text-embedding-004 produces 768 dimensions
-        if self.llm.embedding_model == "models/text-embedding-004":
+        # Gemini gemini-embedding-001 produces 3072 dimensions
+        if self.llm.embedding_model == "models/gemini-embedding-001":
             expected_dim = 768
             if self.storage.vector_dimension != expected_dim:
                 raise ValueError(

@@ -39,8 +39,8 @@ class GeminiProvider(BaseLLMProvider):
     def __init__(
         self,
         api_key: str | None = None,
-        model_name: str = "gemini-2.0-flash-exp",
-        embedding_model: str = "models/text-embedding-004",
+        model_name: str = "gemini-2.0-flash",
+        embedding_model: str = "models/gemini-embedding-001",
         **kwargs: Any,
     ) -> None:
         """Initialize Gemini provider.
@@ -70,7 +70,7 @@ class GeminiProvider(BaseLLMProvider):
                 model=model_name, google_api_key=self.api_key, **kwargs
             )
             self._embeddings = GoogleGenerativeAIEmbeddings(
-                model=embedding_model, google_api_key=self.api_key
+                model=embedding_model, google_api_key=self.api_key, output_dimensionality=768
             )
         except Exception as e:
             raise LLMProviderError(f"Failed to initialize Gemini models: {e}") from e

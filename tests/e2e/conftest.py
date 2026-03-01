@@ -13,7 +13,7 @@ def postgres_connection_string():
     """
     return os.getenv(
         "TEST_POSTGRES_CONNECTION",
-        "postgresql://vibetest:vibetest123@localhost:5433/vibe_rag_test",
+        "postgresql://vibetest:vibetest123@localhost:5434/vibe_rag_test",
     )
 
 

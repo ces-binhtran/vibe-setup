@@ -40,14 +40,14 @@ async def main():
         llm=LLMConfig(
             provider="gemini",
             api_key=os.getenv("GOOGLE_API_KEY", "your-api-key-here"),
-            model_name="gemini-2.0-flash-exp",
+            model_name="gemini-2.0-flash",
         ),
         storage=StorageConfig(
             backend="postgres",
             collection_name="simple_example",
             connection_string=os.getenv(
                 "POSTGRES_CONNECTION",
-                "postgresql://vibetest:vibetest123@localhost:5433/vibe_rag_test",
+                "postgresql://vibetest:vibetest123@localhost:5434/vibe_rag_test",
             ),
             vector_dimension=768,
         ),

@@ -42,7 +42,7 @@ class PostgresVectorStore(BaseVectorStore):
         Args:
             collection_name: Name of the table to store vectors
             connection_string: PostgreSQL connection string
-            vector_dimension: Dimension of embedding vectors (default: 768)
+            vector_dimension: Dimension of embedding vectors (default: 3072)
 
         Raises:
             ConfigurationError: If collection_name is not a valid PostgreSQL identifier
@@ -92,13 +92,14 @@ class PostgresVectorStore(BaseVectorStore):
                 """
             )
 
-            # Create index for similarity search
+            # Create HNSW index - supports up to 16000 dimensions
+            # Falls back to sequential scan for small datasets automatically
             await conn.execute(
                 f"""
+                SET max_parallel_workers_per_gather = 4;
                 CREATE INDEX IF NOT EXISTS {self.collection_name}_embedding_idx
                 ON {self.collection_name}
-                USING ivfflat (embedding vector_cosine_ops)
-                WITH (lists = 100)
+                USING hnsw (embedding vector_cosine_ops)
                 """
             )
 
@@ -134,7 +135,7 @@ class PostgresVectorStore(BaseVectorStore):
                         doc.id,
                         doc.content,
                         json.dumps(doc.metadata),
-                        embeddings[i],
+                        "[" + ",".join(str(x) for x in embeddings[i]) + "]",
                     )
                     for i, doc in enumerate(documents)
                 ]
@@ -186,11 +187,11 @@ class PostgresVectorStore(BaseVectorStore):
             async with self._pool.acquire() as conn:
                 # Build query with optional metadata filter
                 query = f"""
-                    SELECT id, content, metadata, embedding <=> $1 AS distance
+                    SELECT id, content, metadata, embedding <=> $1::vector AS distance
                     FROM {self.collection_name}
                 """
 
-                params: list[Any] = [query_embedding]
+                params: list[Any] = ["[" + ",".join(str(x) for x in query_embedding) + "]"]
 
                 if filter_metadata:
                     # Use JSONB containment operator (@>) for correct type comparison

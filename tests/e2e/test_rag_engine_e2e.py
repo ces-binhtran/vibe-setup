@@ -26,8 +26,8 @@ class TestRAGEngineE2E:
             llm=LLMConfig(
                 provider="gemini",
                 api_key=gemini_api_key,
-                model_name="gemini-2.0-flash-exp",
-                embedding_model="models/text-embedding-004",
+                model_name="gemini-2.0-flash",
+                embedding_model="models/gemini-embedding-001",
             ),
             storage=StorageConfig(
                 backend="postgres",
