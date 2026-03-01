@@ -3,6 +3,8 @@ name: vibe-rag-tdd
 description: TDD workflow specifically for vibe-rag framework development - ensures adapter pattern, async operations, and proper mocking
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-tdd.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag TDD Workflow
 
 Use this skill when implementing any component in the vibe-rag framework.
