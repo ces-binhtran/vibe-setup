@@ -188,6 +188,55 @@ async def test_similarity_search_with_metadata_filter():
 
 
 @pytest.mark.asyncio
+async def test_similarity_search_metadata_filter_uses_jsonb_containment():
+    """similarity_search uses JSONB @> containment operator for correct type comparison.
+
+    Bug: Using ->> operator with json.dumps() causes type mismatch:
+    - metadata->>'key' returns text without quotes: "pdf"
+    - json.dumps("pdf") returns text with quotes: '"pdf"'
+    - Comparison "pdf" = '"pdf"' fails
+
+    Fix: Use @> containment operator with proper JSONB encoding.
+    """
+    pool, conn = create_mock_pool()
+    conn.fetch.return_value = []
+
+    with patch("vibe_rag.storage.postgres_vector.asyncpg.create_pool", new_callable=AsyncMock) as mock_create_pool:
+        mock_create_pool.return_value = pool
+
+        store = PostgresVectorStore(
+            collection_name="test_collection",
+            connection_string="postgresql://localhost/test",
+        )
+        await store.initialize()
+
+        query_embedding = [1.0, 2.0, 3.0]
+
+        # Test with string value (most common case)
+        await store.similarity_search(
+            query_embedding, k=5, filter_metadata={"type": "pdf"}
+        )
+
+        # Verify query uses @> containment operator
+        call_args = conn.fetch.call_args[0]
+        sql_query = call_args[0]
+        params = call_args[1:]
+
+        # Should use @> containment operator, not ->>
+        assert "@>" in sql_query, "Should use @> containment operator for JSONB comparison"
+        assert "->>" not in sql_query, "Should not use ->> text extraction operator"
+
+        # Parameters should contain JSONB-encoded filter
+        # The filter {"type": "pdf"} should be passed as JSONB
+        assert len(params) == 2  # [query_embedding, jsonb_filter]
+        assert params[0] == query_embedding
+        # params[1] should be '{"type": "pdf"}' as a JSON string
+        import json
+        filter_param = json.loads(params[1])
+        assert filter_param == {"type": "pdf"}
+
+
+@pytest.mark.asyncio
 async def test_similarity_search_raises_error_on_failure():
     """similarity_search raises RetrievalError on database failure."""
     pool, conn = create_mock_pool()

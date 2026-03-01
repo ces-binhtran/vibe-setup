@@ -193,15 +193,11 @@ class PostgresVectorStore(BaseVectorStore):
                 params: list[Any] = [query_embedding]
 
                 if filter_metadata:
-                    # Add JSONB filter conditions
-                    conditions = []
-                    for key, value in filter_metadata.items():
-                        key_idx = len(params) + 1
-                        value_idx = len(params) + 2
-                        params.extend([key, json.dumps(value)])
-                        conditions.append(f"metadata->>${key_idx} = ${value_idx}")
-
-                    query += " WHERE " + " AND ".join(conditions)
+                    # Use JSONB containment operator (@>) for correct type comparison
+                    # This avoids the type mismatch issue with ->> text extraction
+                    param_idx = len(params) + 1
+                    params.append(json.dumps(filter_metadata))
+                    query += f" WHERE metadata @> ${param_idx}::jsonb"
 
                 query += f" ORDER BY distance LIMIT {k}"
 
