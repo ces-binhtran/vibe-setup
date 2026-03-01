@@ -27,6 +27,7 @@ from vibe_rag.utils.errors import (
     RetrievalError,
     StorageError,
 )
+from vibe_rag.integrations.langgraph import RAGTool, RAGToolInput
 from vibe_rag.utils.observability import MetricsTracker, RAGMetrics
 
 __version__ = "0.1.0"
@@ -37,6 +38,8 @@ __all__ = [
     "RAGEngine",
     "QuickSetup",
     "BasicRAGModule",
+    "RAGTool",
+    "RAGToolInput",
     "RAGConfig",
     "LLMConfig",
     "StorageConfig",
