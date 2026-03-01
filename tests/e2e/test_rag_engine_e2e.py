@@ -44,7 +44,13 @@ class TestRAGEngineE2E:
         )
 
         async with RAGEngine(config) as engine:
-            # Clean up any existing data
+            # Ensure a clean table for each test run:
+            # 1. delete_collection() drops the table if it exists (idempotent via DROP TABLE IF EXISTS)
+            # 2. _create_table() is called explicitly after deletion so the table and HNSW
+            #    index exist before any test writes data. Without this call, the first ingest()
+            #    would rely on the table already being present from initialize(), which may
+            #    hold stale rows from a previous run. The try/except swallows errors in the
+            #    unlikely case where the pool is unavailable at fixture setup time.
             try:
                 await engine.storage.delete_collection()
                 await engine.storage._create_table()
@@ -53,7 +59,7 @@ class TestRAGEngineE2E:
 
             yield engine
 
-            # Cleanup after test
+            # Drop the table after each test to leave the database clean for the next run.
             try:
                 await engine.storage.delete_collection()
             except Exception:
