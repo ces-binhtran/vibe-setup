@@ -8,17 +8,23 @@
 
 **Tech Stack:** Python 3.10+, LangChain, Google Gemini, PostgreSQL + pgvector, Pydantic, pytest
 
-## Skill-Driven Workflows
+## Workflow Checkpoints
 
-**CRITICAL:** All workflows are managed by skills. Invoke skills automatically at these checkpoints:
+**CRITICAL:** At each checkpoint, read the corresponding skill file and follow it exactly.
 
-- **Starting any task:** `/vibe-rag:task-workflow`
-- **Before committing:** `/vibe-rag:commit-guidelines`
-- **Implementing components:** `/vibe-rag:tdd` + `/vibe-rag:component`
-- **Writing code:** `/vibe-rag:code-quality`
-- **Handling errors:** `/vibe-rag:error-handling`
-- **Writing docs:** `/vibe-rag:documentation`
-- **Using parallel work:** `/vibe-rag:agent-teams`
+### File-Based Skill Loading
+
+Claude Code cannot load project-local skills via the Skill tool. Instead, **read skill files directly** using the Read tool:
+
+- **Starting any task:** Read `.claude/skills/vibe-rag-task-workflow.md`
+- **Before committing:** Read `.claude/skills/vibe-rag-commit-guidelines.md`
+- **Implementing components:** Read `.claude/skills/vibe-rag-tdd.md` + `.claude/skills/vibe-rag-component.md`
+- **Writing code:** Read `.claude/skills/vibe-rag-code-quality.md`
+- **Handling errors:** Read `.claude/skills/vibe-rag-error-handling.md`
+- **Writing docs:** Read `.claude/skills/vibe-rag-documentation.md`
+- **Using parallel work:** Read `.claude/skills/vibe-rag-agent-teams.md`
+
+**Important:** These are instructions to Claude Code agents. Read the file, then follow its contents exactly.
 
 ## Project-Specific Patterns
 
