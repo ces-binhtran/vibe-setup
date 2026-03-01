@@ -245,3 +245,73 @@ because Claude Code does not support project-local skill registration.
 - Original refactoring: `docs/plans/2026-03-01-claude-md-refactoring-design.md`
 - Claude Code plugin structure: `~/.claude/plugins/cache/claude-plugins-official/superpowers/`
 - Issue: DUB-41 "Agent not follow the claude.md"
+
+## Implementation Results
+
+**Completion Date:** 2026-03-01
+
+### Changes Made
+
+1. **CLAUDE.md:** Replaced "Skill-Driven Workflows" with "Workflow Checkpoints" using file paths
+   - Updated section header (line 11)
+   - Added file-based loading explanation (lines 15-17)
+   - Converted 7 skill references from `/vibe-rag:*` to `.claude/skills/*.md` format
+   - Added clarity note: "read and follow skills" in Critical Reminders (line 97)
+
+2. **All 8 skill files:** Added file-based loading note in header
+   - Note positioned after frontmatter, before main header
+   - Explains file-based loading mechanism
+   - Includes correct filename in each note
+
+3. **Cross-references:** Updated all `/vibe-rag:*` references to file paths
+   - task-workflow.md: 4 references updated
+   - code-quality.md: 2 references updated
+   - Total: 6 cross-references converted to file-based format
+
+4. **Testing:** Verified all workflow checkpoints work with Read tool
+   - Task workflow checkpoint: ✅ CLAUDE.md → skill file mapping works
+   - Commit workflow checkpoint: ✅ CLAUDE.md → skill file mapping works
+   - Both skills load successfully and contain actionable content
+
+### Validation
+
+- ✅ CLAUDE.md contains file-based loading instructions
+- ✅ All skills have header notes explaining file-based loading
+- ✅ No broken `/vibe-rag:*` references remain (verified with grep)
+- ✅ Workflow checkpoints successfully map to skill files
+- ✅ Skills are readable and actionable via Read tool
+- ✅ Context reduction preserved (83.8%)
+
+### Commits Created
+
+Total: 12 commits
+- 2 commits for CLAUDE.md (initial update + consistency fixes)
+- 8 commits for skill header notes (one per skill file)
+- 2 commits for cross-reference updates (task-workflow + remaining)
+
+### Files Modified
+
+- `CLAUDE.md`
+- `.claude/skills/vibe-rag-task-workflow.md`
+- `.claude/skills/vibe-rag-commit-guidelines.md`
+- `.claude/skills/vibe-rag-tdd.md`
+- `.claude/skills/vibe-rag-component.md`
+- `.claude/skills/vibe-rag-code-quality.md`
+- `.claude/skills/vibe-rag-error-handling.md`
+- `.claude/skills/vibe-rag-documentation.md`
+- `.claude/skills/vibe-rag-agent-teams.md`
+
+### Success Metrics
+
+- **Broken skill references:** Fixed (0 remaining `/vibe-rag:*` references)
+- **File-based loading:** Working (checkpoints successfully tested)
+- **Context reduction:** Preserved (83.8% reduction maintained)
+- **Project-scoping:** Maintained (skills versioned in git with project)
+- **Documentation:** Complete (design doc + implementation results)
+
+### Lessons Learned
+
+1. **Claude Code limitation confirmed:** Project-local skills in `.claude/skills/` are not loaded by Skill tool
+2. **File-based loading effective:** Read tool provides equivalent functionality
+3. **Consistency critical:** Updating CLAUDE.md, skill headers, AND cross-references ensures clarity
+4. **Testing validates approach:** Checkpoint tests confirm the workflow is actionable
