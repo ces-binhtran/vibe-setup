@@ -44,6 +44,19 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 asyncio_mode = "auto"
+addopts = [
+    "-v",                           # Verbose output
+    "--strict-markers",             # Enforce marker registration
+    "--cov=vibe_rag",              # Coverage for vibe_rag package
+    "--cov-report=term-missing",   # Show missing lines in terminal
+    "--cov-report=html",           # Generate HTML coverage report
+    "--tb=short",                  # Shorter traceback format
+]
+markers = [
+    "unit: Unit tests (fast, isolated)",
+    "integration: Integration tests (slower, real dependencies)",
+    "e2e: End-to-end tests (slowest, full workflows)",
+]
 
 [tool.black]
 line-length = 100
