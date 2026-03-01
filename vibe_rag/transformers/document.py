@@ -70,7 +70,7 @@ class DocumentProcessor:
                 chunk_overlap=chunk_overlap,
             )
 
-    async def process(self, content: str, metadata: Optional[dict] = None) -> list[Document]:
+    def process(self, content: str, metadata: Optional[dict] = None) -> list[Document]:
         """Process text into chunks with enriched metadata.
 
         Args:
@@ -78,7 +78,15 @@ class DocumentProcessor:
             metadata: Source metadata to copy to chunks
 
         Returns:
-            List of Document objects with enriched metadata
+            List of Document objects with enriched metadata.
+            Each chunk's metadata includes:
+            - chunk_index: Position in chunk sequence (0-indexed)
+            - chunk_total: Total number of chunks created
+            - chunk_size: Actual character count of this chunk
+            - chunking_strategy: Strategy used ("fixed", "recursive", "custom")
+            - parent_doc_id: UUID linking chunks from same source document
+            - chunk_overlap: Configured overlap size in characters
+            - Plus any metadata from the original source document
 
         Raises:
             DocumentProcessingError: If chunking fails
