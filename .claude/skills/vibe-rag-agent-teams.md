@@ -3,6 +3,8 @@ name: vibe-rag-agent-teams
 description: Guide parallel work strategies with subagents and agent teams - when to use each approach, how to enable and coordinate teams effectively
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-agent-teams.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Agent Teams & Parallel Work
 
 Use this skill when considering parallel or multi-agent work strategies.
