@@ -28,7 +28,7 @@ Before writing any code:
 
 ## During Implementation
 
-1. **Follow TDD religiously** - Invoke `/vibe-rag:tdd` skill
+1. **Follow TDD religiously** - Read `.claude/skills/vibe-rag-tdd.md`
    - Write failing tests first
    - Run tests to verify they fail
    - Write minimal code to pass
@@ -41,7 +41,7 @@ Before writing any code:
    - Follow established patterns (adapter, composition, etc.)
 4. **Keep commits small and focused** - One logical change per commit
 5. **Run tests frequently** - Catch issues early
-6. **Use parallel agents when beneficial** - Invoke `/vibe-rag:agent-teams` for guidance
+6. **Use parallel agents when beneficial** - Read `.claude/skills/vibe-rag-agent-teams.md` for guidance
 
 ## Before Marking Complete
 
@@ -60,8 +60,8 @@ Before writing any code:
    - `ruff check vibe_rag tests`
    - `mypy vibe_rag`
 5. **Simplify code** - Invoke `/code-simplifier` skill
-6. **Update documentation** - Invoke `/vibe-rag:documentation` if needed
-7. **Commit all changes** - Invoke `/vibe-rag:commit-guidelines`
+6. **Update documentation** - Read `.claude/skills/vibe-rag-documentation.md` if needed
+7. **Commit all changes** - Read `.claude/skills/vibe-rag-commit-guidelines.md`
 8. **Use `/superpowers:verification-before-completion`** - Final check
 
 ## Common Pitfalls to Avoid
