@@ -1,7 +1,8 @@
 # Test Results - Phase 1.6 RAG Engine Core
 
 **Date:** 2026-03-01
-**Python Version:** 3.11.8
+**Python Version:** 3.10+ (tested with 3.11.8)
+**Environment:** .venv (virtualenv)
 **Branch:** vk/c7f0-phase-1-6-rag-en
 
 ## Test Summary
@@ -143,22 +144,22 @@ raise RAGException(f"Query execution failed: {e}") from e
 
 ### Run All Unit Tests
 ```bash
-~/.pyenv/versions/3.11.8/bin/python -m pytest tests/unit -v
+.venv/bin/python -m pytest tests/unit -v
 ```
 
 ### Run Integration Tests
 ```bash
-~/.pyenv/versions/3.11.8/bin/python -m pytest tests/integration -v
+.venv/bin/python -m pytest tests/integration -v
 ```
 
 ### Run with Coverage
 ```bash
-~/.pyenv/versions/3.11.8/bin/python -m pytest tests/unit tests/integration --cov=vibe_rag --cov-report=html
+.venv/bin/python -m pytest tests/unit tests/integration --cov=vibe_rag --cov-report=html
 ```
 
 ### Run Specific Test
 ```bash
-~/.pyenv/versions/3.11.8/bin/python -m pytest tests/integration/test_rag_engine.py::TestRAGEngineIntegration::test_query_with_context -v
+.venv/bin/python -m pytest tests/integration/test_rag_engine.py::TestRAGEngineIntegration::test_query_with_context -v
 ```
 
 ## Coverage Reports

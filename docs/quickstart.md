@@ -279,10 +279,10 @@ asyncio.run(test_api())
 ### Vector Dimension Mismatch
 
 ```python
-# Gemini text-embedding-004 uses 768 dimensions
+# Gemini gemini-embedding-001 uses 768 dimensions
 config = RAGConfig(
     llm=LLMConfig(
-        embedding_model="models/text-embedding-004",  # 768 dims
+        embedding_model="models/gemini-embedding-001",  # 768 dims
     ),
     storage=StorageConfig(
         vector_dimension=768,  # Must match!

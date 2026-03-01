@@ -64,8 +64,8 @@ asyncio.run(main())
 LLMConfig(
     provider="gemini",
     api_key="key",
-    model_name="gemini-2.0-flash-exp",
-    embedding_model="models/text-embedding-004",
+    model_name="gemini-2.0-flash",
+    embedding_model="models/gemini-embedding-001",
     generation_kwargs={"temperature": 0.7}
 )
 ```
