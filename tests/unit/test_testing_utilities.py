@@ -88,12 +88,11 @@ async def test_mock_llm_provider_embed():
 @pytest.mark.asyncio
 async def test_mock_vector_store_add_and_search(sample_documents, sample_embeddings):
     """Test MockVectorStore.add_documents() and similarity_search() operations."""
-    store = MockVectorStore()
+    store = MockVectorStore(collection_name="test_collection")
 
     # Add documents
     await store.add_documents(
         documents=sample_documents,
-        collection_name="test_collection",
         embeddings=sample_embeddings
     )
 
@@ -101,8 +100,7 @@ async def test_mock_vector_store_add_and_search(sample_documents, sample_embeddi
     query_embedding = sample_embeddings[0]
     results = await store.similarity_search(
         query_embedding=query_embedding,
-        collection_name="test_collection",
-        top_k=2
+        k=2
     )
 
     assert len(results) == 2
@@ -114,7 +112,7 @@ async def test_mock_vector_store_add_and_search(sample_documents, sample_embeddi
 @pytest.mark.asyncio
 async def test_mock_vector_store_metadata_filtering(sample_embeddings):
     """Test MockVectorStore metadata filtering."""
-    store = MockVectorStore()
+    store = MockVectorStore(collection_name="filtered_collection")
 
     # Add documents with metadata
     docs_with_metadata = [
@@ -134,7 +132,6 @@ async def test_mock_vector_store_metadata_filtering(sample_embeddings):
 
     await store.add_documents(
         documents=docs_with_metadata,
-        collection_name="filtered_collection",
         embeddings=sample_embeddings
     )
 
@@ -142,9 +139,8 @@ async def test_mock_vector_store_metadata_filtering(sample_embeddings):
     query_embedding = sample_embeddings[0]
     results = await store.similarity_search(
         query_embedding=query_embedding,
-        collection_name="filtered_collection",
-        top_k=5,
-        filters={"category": "programming"}
+        k=5,
+        filter_metadata={"category": "programming"}
     )
 
     assert len(results) == 1
@@ -155,7 +151,7 @@ async def test_mock_vector_store_metadata_filtering(sample_embeddings):
 @pytest.mark.asyncio
 async def test_mock_vector_store_delete():
     """Test MockVectorStore.delete_collection() operation."""
-    store = MockVectorStore()
+    store = MockVectorStore(collection_name="delete_test")
 
     # Add a document
     doc = Document(id="test_doc_123", content="Test content")
@@ -163,20 +159,16 @@ async def test_mock_vector_store_delete():
 
     await store.add_documents(
         documents=[doc],
-        collection_name="delete_test",
         embeddings=[embedding]
     )
 
     # Delete the collection
-    await store.delete_collection(
-        collection_name="delete_test"
-    )
+    await store.delete_collection()
 
     # Search should return no results (collection deleted)
     results = await store.similarity_search(
         query_embedding=embedding,
-        collection_name="delete_test",
-        top_k=10
+        k=10
     )
 
     assert len(results) == 0
