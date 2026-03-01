@@ -9,9 +9,14 @@ from vibe_rag.storage.base import BaseVectorStore
 class ConcreteVectorStore(BaseVectorStore):
     """Concrete implementation for testing abstract interface."""
 
+    def __init__(self, collection_name: str):
+        super().__init__(collection_name)
+        self.initialize_called = False
+        self.close_called = False
+
     async def initialize(self) -> None:
         """Initialize the vector store (no-op for test implementation)."""
-        pass
+        self.initialize_called = True
 
     async def add_documents(
         self, documents: list[Document], embeddings: list[list[float]]
@@ -31,7 +36,7 @@ class ConcreteVectorStore(BaseVectorStore):
 
     async def close(self) -> None:
         """Close connections (no-op for test implementation)."""
-        pass
+        self.close_called = True
 
 
 def test_base_vector_store_is_abstract():
@@ -204,3 +209,51 @@ async def test_concrete_implementation_delete_collection():
     store = ConcreteVectorStore(collection_name="test")
 
     await store.delete_collection()  # Should not raise
+
+
+@pytest.mark.asyncio
+async def test_context_manager_calls_initialize_on_enter():
+    """__aenter__ calls initialize() and returns self."""
+    store = ConcreteVectorStore("test")
+
+    result = await store.__aenter__()
+
+    assert store.initialize_called
+    assert result is store
+
+
+@pytest.mark.asyncio
+async def test_context_manager_calls_close_on_exit():
+    """__aexit__ calls close()."""
+    store = ConcreteVectorStore("test")
+    await store.__aenter__()
+
+    await store.__aexit__(None, None, None)
+
+    assert store.close_called
+
+
+@pytest.mark.asyncio
+async def test_context_manager_propagates_exceptions():
+    """__aexit__ returns None to propagate exceptions."""
+    store = ConcreteVectorStore("test")
+    await store.__aenter__()
+
+    result = await store.__aexit__(ValueError, ValueError("test"), None)
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_context_manager_closes_even_on_exception():
+    """Context manager calls close() even when exception occurs."""
+    store = ConcreteVectorStore("test")
+
+    try:
+        async with store:
+            raise ValueError("Test exception")
+    except ValueError:
+        pass
+
+    assert store.initialize_called
+    assert store.close_called
