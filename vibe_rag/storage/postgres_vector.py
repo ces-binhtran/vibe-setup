@@ -1,13 +1,14 @@
 """PostgreSQL + pgvector implementation of vector storage."""
 
 import json
+import re
 from typing import Any
 
 import asyncpg
 
 from vibe_rag.models import Document
 from vibe_rag.storage.base import BaseVectorStore
-from vibe_rag.utils.errors import RetrievalError, StorageError
+from vibe_rag.utils.errors import ConfigurationError, RetrievalError, StorageError
 
 
 class PostgresVectorStore(BaseVectorStore):
@@ -42,7 +43,17 @@ class PostgresVectorStore(BaseVectorStore):
             collection_name: Name of the table to store vectors
             connection_string: PostgreSQL connection string
             vector_dimension: Dimension of embedding vectors (default: 768)
+
+        Raises:
+            ConfigurationError: If collection_name is not a valid PostgreSQL identifier
         """
+        # Validate collection_name to prevent SQL injection
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", collection_name):
+            raise ConfigurationError(
+                f"Invalid collection name: {collection_name}. "
+                "Must start with a letter or underscore and contain only "
+                "letters, numbers, and underscores."
+            )
         super().__init__(collection_name)
         self.connection_string = connection_string
         self.vector_dimension = vector_dimension
