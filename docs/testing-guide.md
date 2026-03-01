@@ -15,6 +15,10 @@ Before testing, ensure you have:
 ### 1. Install Dependencies
 
 ```bash
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
 # Install vibe-rag with dev dependencies
 pip install -e ".[dev]"
 
@@ -38,11 +42,11 @@ docker-compose -f docker-compose.test.yml logs -f
 ```
 
 **Test Database Details:**
-- Host: `localhost:5433`
+- Host: `localhost:5434`
 - User: `vibetest`
 - Password: `vibetest123`
 - Database: `vibe_rag_test`
-- Connection String: `postgresql://vibetest:vibetest123@localhost:5433/vibe_rag_test`
+- Connection String: `postgresql://vibetest:vibetest123@localhost:5434/vibe_rag_test`
 
 ### 3. Set Environment Variables
 
@@ -51,7 +55,7 @@ docker-compose -f docker-compose.test.yml logs -f
 export GOOGLE_API_KEY="your-gemini-api-key-here"
 
 # Optional: Override test database connection
-export TEST_POSTGRES_CONNECTION="postgresql://vibetest:vibetest123@localhost:5433/vibe_rag_test"
+export TEST_POSTGRES_CONNECTION="postgresql://vibetest:vibetest123@localhost:5434/vibe_rag_test"
 ```
 
 ## Running Tests
@@ -408,10 +412,10 @@ config = RAGConfig(
 
 **Solution:**
 ```python
-# Gemini text-embedding-004 uses 768 dimensions
+# Gemini gemini-embedding-001 uses 768 dimensions
 config = RAGConfig(
     llm=LLMConfig(
-        embedding_model="models/text-embedding-004",  # 768 dims
+        embedding_model="models/gemini-embedding-001",  # 768 dims
     ),
     storage=StorageConfig(
         vector_dimension=768,  # MUST match!
