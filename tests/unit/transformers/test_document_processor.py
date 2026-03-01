@@ -130,16 +130,19 @@ def test_document_processor_register_strategy():
 
 def test_document_processor_register_strategy_duplicate():
     """Test registering strategy with existing name."""
+    # Save original
+    original_fixed = DocumentProcessor._strategies["fixed"]
 
     class AnotherSplitter:
         pass
 
-    # Should allow overwriting existing strategies
-    DocumentProcessor.register_strategy("fixed", AnotherSplitter)
-    assert DocumentProcessor._strategies["fixed"] == AnotherSplitter
-
-    # Restore original for other tests
-    DocumentProcessor.register_strategy("fixed", CharacterTextSplitter)
+    try:
+        # Should allow overwriting existing strategies
+        DocumentProcessor.register_strategy("fixed", AnotherSplitter)
+        assert DocumentProcessor._strategies["fixed"] == AnotherSplitter
+    finally:
+        # Restore original for other tests
+        DocumentProcessor._strategies["fixed"] = original_fixed
 
 
 def test_document_processor_process_error_handling():
