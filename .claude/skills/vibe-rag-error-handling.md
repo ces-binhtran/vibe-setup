@@ -3,6 +3,8 @@ name: vibe-rag-error-handling
 description: Guide exception design and error handling patterns - uses custom exceptions with specific error types, no silent failures
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-error-handling.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Error Handling
 
 Use this skill when implementing error handling or creating exceptions.
