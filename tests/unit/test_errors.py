@@ -8,7 +8,9 @@ from vibe_rag.utils.errors import (
     LLMProviderError,
     StorageError,
     ConfigurationError,
+    DocumentProcessingError,
 )
+from vibe_rag.models import Document
 
 
 def test_all_exceptions_inherit_from_rag_exception():
@@ -88,3 +90,41 @@ def test_specific_catch_preferred_over_base():
         caught_specific = False
 
     assert caught_specific, "Specific handler should catch before base handler"
+
+
+def test_document_processing_error_basic():
+    """Test basic DocumentProcessingError initialization."""
+    error = DocumentProcessingError("Test error")
+    assert str(error) == "Test error"
+    assert error.file_path is None
+    assert error.error_type is None
+    assert error.original_error is None
+    assert error.partial_results is None
+
+
+def test_document_processing_error_with_context():
+    """Test DocumentProcessingError with full context."""
+    original = ValueError("Original error")
+    partial_docs = [Document(content="test", metadata={"page": 1})]
+
+    error = DocumentProcessingError(
+        message="Failed to process document",
+        file_path="/path/to/doc.pdf",
+        error_type="CorruptPDFError",
+        original_error=original,
+        partial_results=partial_docs,
+    )
+
+    assert str(error) == "Failed to process document"
+    assert error.file_path == "/path/to/doc.pdf"
+    assert error.error_type == "CorruptPDFError"
+    assert error.original_error is original
+    assert error.partial_results == partial_docs
+    assert len(error.partial_results) == 1
+
+
+def test_document_processing_error_inheritance():
+    """Test that DocumentProcessingError inherits from RAGException."""
+    error = DocumentProcessingError("test")
+    assert isinstance(error, RAGException)
+    assert isinstance(error, Exception)
