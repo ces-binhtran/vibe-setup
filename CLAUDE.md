@@ -24,7 +24,7 @@ Claude Code cannot load project-local skills via the Skill tool. Instead, **read
 - **Writing docs:** Read `.claude/skills/vibe-rag-documentation.md`
 - **Using parallel work:** Read `.claude/skills/vibe-rag-agent-teams.md`
 
-**Important:** These are instructions to Claude Code agents. Read the file, then follow its contents exactly.
+**Important:** These are instructions to Claude Code agents. Read the file, then follow it exactly.
 
 ## Project-Specific Patterns
 
@@ -94,6 +94,6 @@ Located in `vibe_rag/utils/errors.py`:
 ## Critical Reminders
 
 - ❌ **NEVER** add `Co-Authored-By: Claude` footers to commits
-- ✅ **ALWAYS** use skills at workflow checkpoints
+- ✅ **ALWAYS** read and follow skills at workflow checkpoints
 - ✅ **ALWAYS** follow TDD (tests first)
 - ✅ **ALWAYS** use adapter pattern for components
