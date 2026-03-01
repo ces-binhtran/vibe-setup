@@ -4,6 +4,12 @@ import pytest
 from abc import ABC
 from vibe_rag.pipeline.base import BasePipelineComponent
 from vibe_rag.pipeline.context import PipelineContext
+from vibe_rag.pipeline.registry import (
+    register_component,
+    get_component,
+    list_components,
+    _COMPONENT_REGISTRY
+)
 
 
 def test_base_component_is_abstract():
@@ -59,3 +65,66 @@ def test_validate_context_default():
 
     # Should not raise
     component.validate_context(context)
+
+
+def test_register_component_decorator():
+    """Test component registration via decorator."""
+    @register_component("test_component")
+    class TestComponent(BasePipelineComponent):
+        @property
+        def component_type(self) -> str:
+            return "test"
+
+        async def process(self, context: PipelineContext) -> PipelineContext:
+            return context
+
+    # Clear registry first to avoid conflicts
+    _COMPONENT_REGISTRY.clear()
+
+    @register_component("test_component")
+    class TestComponent2(BasePipelineComponent):
+        @property
+        def component_type(self) -> str:
+            return "test"
+
+        async def process(self, context: PipelineContext) -> PipelineContext:
+            return context
+
+    assert get_component("test_component") == TestComponent2
+    assert "test_component" in list_components()
+
+
+def test_get_component_returns_none_for_missing():
+    """Test that get_component returns None for missing components."""
+    result = get_component("nonexistent_component")
+
+    assert result is None
+
+
+def test_list_components():
+    """Test listing all registered components."""
+    _COMPONENT_REGISTRY.clear()
+
+    @register_component("comp1")
+    class Comp1(BasePipelineComponent):
+        @property
+        def component_type(self) -> str:
+            return "test"
+
+        async def process(self, context: PipelineContext) -> PipelineContext:
+            return context
+
+    @register_component("comp2")
+    class Comp2(BasePipelineComponent):
+        @property
+        def component_type(self) -> str:
+            return "test"
+
+        async def process(self, context: PipelineContext) -> PipelineContext:
+            return context
+
+    components = list_components()
+
+    assert "comp1" in components
+    assert "comp2" in components
+    assert len(components) == 2
