@@ -7,8 +7,10 @@ A batteries-included but removable RAG framework with pluggable components.
 from vibe_rag.models import Document
 from vibe_rag.retrievers import VectorRetriever
 from vibe_rag.transformers import DocumentProcessor
+from vibe_rag.loaders import TextLoader, PDFLoader, MarkdownLoader
 from vibe_rag.utils.errors import (
     ConfigurationError,
+    DocumentProcessingError,
     EmbeddingError,
     LLMProviderError,
     RAGException,
@@ -23,10 +25,14 @@ __all__ = [
     "Document",
     "VectorRetriever",
     "DocumentProcessor",
+    "TextLoader",
+    "PDFLoader",
+    "MarkdownLoader",
     "RAGException",
     "EmbeddingError",
     "RetrievalError",
     "LLMProviderError",
     "StorageError",
     "ConfigurationError",
+    "DocumentProcessingError",
 ]
