@@ -6,7 +6,7 @@ import pytest
 
 from vibe_rag.models import Document
 from vibe_rag.storage.postgres_vector import PostgresVectorStore
-from vibe_rag.utils.errors import StorageError
+from vibe_rag.utils.errors import ConfigurationError, StorageError
 
 
 def create_mock_pool():
@@ -267,3 +267,50 @@ async def test_close_closes_pool():
         await store.close()
 
         pool.close.assert_called_once()
+
+
+def test_valid_collection_names():
+    """Valid collection names are accepted."""
+    valid_names = [
+        "test_collection",
+        "TestCollection",
+        "_private_collection",
+        "collection123",
+        "my_collection_2",
+        "a",
+        "_",
+    ]
+
+    for name in valid_names:
+        # Should not raise ConfigurationError
+        store = PostgresVectorStore(
+            collection_name=name,
+            connection_string="postgresql://localhost/test",
+        )
+        assert store.collection_name == name
+
+
+def test_invalid_collection_names_raise_configuration_error():
+    """Invalid collection names raise ConfigurationError to prevent SQL injection."""
+    invalid_names = [
+        "test-collection",  # Contains hyphen
+        "123_collection",  # Starts with number
+        "collection; DROP TABLE users;--",  # SQL injection attempt
+        "collection'; DROP TABLE users;--",  # SQL injection with quote
+        "collection OR 1=1",  # SQL injection condition
+        "collection name",  # Contains space
+        "collection@name",  # Contains special character
+        "collection.name",  # Contains dot
+        "",  # Empty string
+        "collection$name",  # Contains dollar sign
+    ]
+
+    for name in invalid_names:
+        with pytest.raises(
+            ConfigurationError,
+            match="Invalid collection name"
+        ):
+            PostgresVectorStore(
+                collection_name=name,
+                connection_string="postgresql://localhost/test",
+            )
