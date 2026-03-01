@@ -20,6 +20,7 @@ def test_all_exceptions_inherit_from_rag_exception():
     assert issubclass(LLMProviderError, RAGException)
     assert issubclass(StorageError, RAGException)
     assert issubclass(ConfigurationError, RAGException)
+    assert issubclass(DocumentProcessingError, RAGException)
 
 
 def test_rag_exception_inherits_from_exception():
@@ -71,6 +72,7 @@ def test_catch_all_exceptions_via_base():
         LLMProviderError("llm"),
         StorageError("storage"),
         ConfigurationError("config"),
+        DocumentProcessingError("doc_processing"),
     ]
 
     for exc in exceptions:
