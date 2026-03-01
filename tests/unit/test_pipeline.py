@@ -128,3 +128,51 @@ def test_list_components():
     assert "comp1" in components
     assert "comp2" in components
     assert len(components) == 2
+
+
+# PipelineBuilder tests
+
+
+from vibe_rag.pipeline.builder import PipelineBuilder
+
+
+@pytest.mark.asyncio
+async def test_pipeline_builder_add_component():
+    """Test adding components to pipeline builder."""
+    comp1 = MockComponent()
+    comp2 = MockComponent()
+
+    builder = PipelineBuilder()
+    builder.add_component(comp1)
+    builder.add_component(comp2)
+
+    components = builder.build()
+
+    assert len(components) == 2
+    assert components[0] == comp1
+    assert components[1] == comp2
+
+
+@pytest.mark.asyncio
+async def test_pipeline_builder_fluent_api():
+    """Test fluent API chaining."""
+    comp1 = MockComponent()
+    comp2 = MockComponent()
+
+    components = (
+        PipelineBuilder()
+        .add_component(comp1)
+        .add_component(comp2)
+        .build()
+    )
+
+    assert len(components) == 2
+
+
+@pytest.mark.asyncio
+async def test_pipeline_builder_empty():
+    """Test building empty pipeline."""
+    builder = PipelineBuilder()
+    components = builder.build()
+
+    assert components == []
