@@ -9,6 +9,10 @@ from vibe_rag.storage.base import BaseVectorStore
 class ConcreteVectorStore(BaseVectorStore):
     """Concrete implementation for testing abstract interface."""
 
+    async def initialize(self) -> None:
+        """Initialize the vector store (no-op for test implementation)."""
+        pass
+
     async def add_documents(
         self, documents: list[Document], embeddings: list[list[float]]
     ) -> list[str]:
@@ -25,6 +29,10 @@ class ConcreteVectorStore(BaseVectorStore):
     async def delete_collection(self) -> None:
         pass
 
+    async def close(self) -> None:
+        """Close connections (no-op for test implementation)."""
+        pass
+
 
 def test_base_vector_store_is_abstract():
     """BaseVectorStore cannot be instantiated directly."""
@@ -32,10 +40,15 @@ def test_base_vector_store_is_abstract():
         BaseVectorStore(collection_name="test")
 
 
-def test_base_vector_store_requires_add_documents():
-    """Subclass must implement add_documents method."""
+def test_base_vector_store_requires_initialize():
+    """Subclass must implement initialize method."""
 
     class IncompleteStore(BaseVectorStore):
+        async def add_documents(
+            self, documents: list[Document], embeddings: list[list[float]]
+        ) -> list[str]:
+            return [doc.id for doc in documents]
+
         async def similarity_search(
             self,
             query_embedding: list[float],
@@ -45,6 +58,34 @@ def test_base_vector_store_requires_add_documents():
             return []
 
         async def delete_collection(self) -> None:
+            pass
+
+        async def close(self) -> None:
+            pass
+
+    with pytest.raises(TypeError, match="Can't instantiate abstract class"):
+        IncompleteStore(collection_name="test")
+
+
+def test_base_vector_store_requires_add_documents():
+    """Subclass must implement add_documents method."""
+
+    class IncompleteStore(BaseVectorStore):
+        async def initialize(self) -> None:
+            pass
+
+        async def similarity_search(
+            self,
+            query_embedding: list[float],
+            k: int = 5,
+            filter_metadata: dict | None = None,
+        ) -> list[Document]:
+            return []
+
+        async def delete_collection(self) -> None:
+            pass
+
+        async def close(self) -> None:
             pass
 
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
@@ -55,12 +96,18 @@ def test_base_vector_store_requires_similarity_search():
     """Subclass must implement similarity_search method."""
 
     class IncompleteStore(BaseVectorStore):
+        async def initialize(self) -> None:
+            pass
+
         async def add_documents(
             self, documents: list[Document], embeddings: list[list[float]]
         ) -> list[str]:
             return [doc.id for doc in documents]
 
         async def delete_collection(self) -> None:
+            pass
+
+        async def close(self) -> None:
             pass
 
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
@@ -71,6 +118,9 @@ def test_base_vector_store_requires_delete_collection():
     """Subclass must implement delete_collection method."""
 
     class IncompleteStore(BaseVectorStore):
+        async def initialize(self) -> None:
+            pass
+
         async def add_documents(
             self, documents: list[Document], embeddings: list[list[float]]
         ) -> list[str]:
@@ -83,6 +133,36 @@ def test_base_vector_store_requires_delete_collection():
             filter_metadata: dict | None = None,
         ) -> list[Document]:
             return []
+
+        async def close(self) -> None:
+            pass
+
+    with pytest.raises(TypeError, match="Can't instantiate abstract class"):
+        IncompleteStore(collection_name="test")
+
+
+def test_base_vector_store_requires_close():
+    """Subclass must implement close method."""
+
+    class IncompleteStore(BaseVectorStore):
+        async def initialize(self) -> None:
+            pass
+
+        async def add_documents(
+            self, documents: list[Document], embeddings: list[list[float]]
+        ) -> list[str]:
+            return [doc.id for doc in documents]
+
+        async def similarity_search(
+            self,
+            query_embedding: list[float],
+            k: int = 5,
+            filter_metadata: dict | None = None,
+        ) -> list[Document]:
+            return []
+
+        async def delete_collection(self) -> None:
+            pass
 
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
         IncompleteStore(collection_name="test")
