@@ -3,6 +3,8 @@ name: vibe-rag-commit-guidelines
 description: Guides agent through vibe-rag commit message standards and Git workflow
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-commit-guidelines.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Commit Guidelines
 
 ## Git Workflow
