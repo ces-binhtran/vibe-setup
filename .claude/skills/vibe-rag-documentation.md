@@ -3,6 +3,8 @@ name: vibe-rag-documentation
 description: Enforce Google-style docstrings, README updates, and security best practices - ensures documentation quality and prevents secret leaks
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-documentation.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Documentation Standards
 
 Use this skill when writing documentation, docstrings, or handling sensitive data.
