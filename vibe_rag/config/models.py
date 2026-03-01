@@ -150,11 +150,17 @@ class RAGConfig(BaseModel):
         Raises:
             ValueError: If dimensions don't match
         """
-        # Gemini gemini-embedding-001 produces 3072 dimensions
-        if self.llm.embedding_model == "models/gemini-embedding-001":
-            expected_dim = 768
+        # Mapping of common models to their dimensions
+        model_dimensions = {
+            "models/gemini-embedding-001": 768,
+            "models/text-embedding-004": 768,
+        }
+
+        if self.llm.embedding_model in model_dimensions:
+            expected_dim = model_dimensions[self.llm.embedding_model]
             if self.storage.vector_dimension != expected_dim:
                 raise ValueError(
                     f"Storage vector_dimension ({self.storage.vector_dimension}) "
-                    f"must match embedding model dimension ({expected_dim})"
+                    f"must match embedding model dimension ({expected_dim}) "
+                    f"for model {self.llm.embedding_model}"
                 )

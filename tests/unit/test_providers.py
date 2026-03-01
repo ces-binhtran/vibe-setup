@@ -66,8 +66,8 @@ class TestGeminiProviderInitialization:
         ):
             provider = GeminiProvider(api_key="test-key-123")
             assert provider.api_key == "test-key-123"
-            assert provider.model_name == "gemini-2.0-flash-exp"
-            assert provider.embedding_model_name == "models/text-embedding-004"
+            assert provider.model_name == "gemini-2.0-flash"
+            assert provider.embedding_model_name == "models/gemini-embedding-001"
 
     def test_init_from_environment(self) -> None:
         """GeminiProvider reads API key from GOOGLE_API_KEY environment variable."""

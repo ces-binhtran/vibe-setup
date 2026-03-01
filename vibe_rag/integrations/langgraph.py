@@ -62,9 +62,10 @@ class RAGTool(BaseTool):
 
     name: str = "knowledge_base_search"
     description: str = (
-        "Search the knowledge base to answer questions using retrieved documents. "
-        "Use this when you need domain-specific information from the knowledge base. "
-        "Returns an answer with supporting source documents."
+        "Search the internal knowledge base for technical documentation, company policies, "
+        "pricing, and other domain-specific information. Use this tool as the primary source "
+        "for any questions about the project or company. "
+        "Returns a detailed answer with supporting source documents."
     )
     args_schema: Type[BaseModel] = RAGToolInput
     rag_engine: RAGEngine
