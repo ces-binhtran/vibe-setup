@@ -5,6 +5,7 @@ A batteries-included but removable RAG framework with pluggable components.
 """
 
 from vibe_rag.models import Document
+from vibe_rag.retrievers import VectorRetriever
 from vibe_rag.utils.errors import (
     ConfigurationError,
     EmbeddingError,
@@ -19,6 +20,7 @@ __version__ = "0.1.0"
 __all__ = [
     "__version__",
     "Document",
+    "VectorRetriever",
     "RAGException",
     "EmbeddingError",
     "RetrievalError",
