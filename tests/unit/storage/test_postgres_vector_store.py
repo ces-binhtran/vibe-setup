@@ -6,7 +6,7 @@ import pytest
 
 from vibe_rag.models import Document
 from vibe_rag.storage.postgres_vector import PostgresVectorStore
-from vibe_rag.utils.errors import ConfigurationError, StorageError
+from vibe_rag.utils.errors import ConfigurationError, RetrievalError, StorageError
 
 
 def create_mock_pool():
@@ -237,6 +237,21 @@ async def test_similarity_search_metadata_filter_uses_jsonb_containment():
 
 
 @pytest.mark.asyncio
+async def test_similarity_search_raises_retrieval_error_when_pool_not_initialized():
+    """similarity_search raises RetrievalError when connection pool is not initialized."""
+    store = PostgresVectorStore(
+        collection_name="test_collection",
+        connection_string="postgresql://localhost/test",
+    )
+    # Don't initialize - pool remains None
+
+    query_embedding = [1.0, 2.0, 3.0]
+
+    with pytest.raises(RetrievalError, match="Connection pool not initialized"):
+        await store.similarity_search(query_embedding, k=5)
+
+
+@pytest.mark.asyncio
 async def test_similarity_search_raises_error_on_failure():
     """similarity_search raises RetrievalError on database failure."""
     pool, conn = create_mock_pool()
@@ -253,7 +268,7 @@ async def test_similarity_search_raises_error_on_failure():
 
         query_embedding = [1.0, 2.0, 3.0]
 
-        with pytest.raises(Exception):  # Will be RetrievalError in implementation
+        with pytest.raises(RetrievalError, match="Failed to search documents"):
             await store.similarity_search(query_embedding, k=5)
 
 
