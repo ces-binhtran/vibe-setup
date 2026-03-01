@@ -17,6 +17,74 @@ Use this skill when implementing any component in the vibe-rag framework.
 5. Use Pydantic for all config and data models
 6. Handle errors with custom exceptions
 
+## Testing Strategy for vibe-rag
+
+### Test Coverage Targets
+
+Maintain these minimum coverage levels:
+
+- **Core engine:** 90%+
+- **Providers:** 85%+
+- **Storage:** 85%+
+- **Pipeline:** 80%+
+- **Utilities:** 75%+
+
+Check coverage with: `pytest --cov=vibe_rag --cov-report=term-missing`
+
+### Testing Levels
+
+**1. Unit Tests** (fast, isolated):
+- Mock external dependencies (APIs, databases)
+- Test one component at a time
+- Located in `tests/unit/`
+- Run with: `pytest tests/unit/`
+
+**2. Integration Tests** (slower, real dependencies):
+- Test component interactions
+- Use testcontainers for databases
+- Located in `tests/integration/`
+- Run with: `pytest tests/integration/`
+
+**3. E2E Tests** (slowest, full workflow):
+- Test complete user workflows
+- Located in `tests/e2e/`
+- Run with: `pytest tests/e2e/`
+
+### Mocking Guidelines
+
+**CRITICAL: NEVER call real APIs in unit tests**
+
+- **Mock Gemini:** Don't call actual Gemini API in tests
+- **Mock OpenAI:** Don't call actual OpenAI API in tests
+- **Mock databases:** Use `unittest.mock` for PostgreSQL connections
+
+**Use these mocking tools:**
+
+- `unittest.mock.AsyncMock` for async functions
+- `unittest.mock.patch` for external dependencies
+- `pytest.fixtures` for reusable test setup
+
+**Example:**
+
+```python
+from unittest.mock import AsyncMock, patch
+
+@pytest.mark.asyncio
+@patch('vibe_rag.providers.gemini.genai')
+async def test_gemini_generate(mock_genai):
+    # Setup mock
+    mock_response = AsyncMock()
+    mock_response.text = "Generated text"
+    mock_genai.GenerativeModel.return_value.generate_content_async.return_value = mock_response
+
+    # Test
+    provider = GeminiProvider(api_key="test-key")
+    result = await provider.generate("prompt")
+
+    # Assert
+    assert result == "Generated text"
+```
+
 ## TDD Workflow for vibe-rag
 
 ### Step 1: Understand the Interface

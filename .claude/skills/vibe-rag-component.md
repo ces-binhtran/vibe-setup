@@ -7,6 +7,13 @@ description: Guide for implementing new pluggable components in vibe-rag framewo
 
 Use this skill when adding a new provider, storage backend, or pipeline component.
 
+## Related skills
+
+- `/superpowers:vibe-rag:tdd` - Follow test-driven development workflow
+- `/superpowers:vibe-rag:code-quality` - Apply DRY, SOLID, type safety standards
+- `/superpowers:vibe-rag:error-handling` - Use custom exceptions properly
+- `/superpowers:vibe-rag:documentation` - Write Google-style docstrings
+
 ## Component Types
 
 ### 1. LLM Provider (e.g., OpenAI, Anthropic)
@@ -281,8 +288,10 @@ Component implementation is complete when:
 - [ ] All abstract methods implemented
 - [ ] All methods use async/await for I/O
 - [ ] External dependencies mocked in tests
-- [ ] Error handling with custom exceptions
-- [ ] Test coverage >= 85%
+- [ ] Error handling with custom exceptions (invoke `/superpowers:vibe-rag:error-handling`)
+- [ ] Test coverage >= 85% (invoke `/superpowers:vibe-rag:tdd`)
+- [ ] Code follows quality standards (invoke `/superpowers:vibe-rag:code-quality`)
+- [ ] Docstrings complete and correct (invoke `/superpowers:vibe-rag:documentation`)
 - [ ] Component exported in package __init__
 - [ ] Component registered in main package exports
 - [ ] RAGConfig updated if component is configurable
