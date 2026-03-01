@@ -3,6 +3,8 @@ name: vibe-rag-code-quality
 description: Enforce DRY, YAGNI, SOLID principles and production-ready code standards - ensures maintainable, performant, and correct implementations
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-code-quality.md`) because Claude Code does not support project-local skill registration.
+
 # vibe-rag Code Quality Standards
 
 Use this skill during code implementation to ensure quality.
