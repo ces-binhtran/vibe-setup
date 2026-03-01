@@ -101,6 +101,6 @@ async def populated_mock_store(
         - Uses 'test_collection' as collection name
         - Combines sample_documents and sample_embeddings fixtures
     """
-    store = MockVectorStore()
-    await store.add_documents(sample_documents, "test_collection", sample_embeddings)
+    store = MockVectorStore("test_collection")
+    await store.add_documents(sample_documents, sample_embeddings)
     return store

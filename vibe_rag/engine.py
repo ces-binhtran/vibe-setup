@@ -370,7 +370,7 @@ Answer:"""
                 metrics.documents_used = len(documents)
                 metrics.metadata.update(
                     {
-                        "pipeline_metadata": context.component_metadata,
+                        "pipeline_metadata": context.metadata,
                         "generation_kwargs": gen_kwargs,
                     }
                 )
@@ -385,7 +385,7 @@ Answer:"""
                     "generation_time_ms": generation_time,
                     "total_time_ms": total_time,
                     "documents_retrieved": len(documents),
-                    "pipeline_metadata": context.component_metadata,
+                    "pipeline_metadata": context.metadata,
                 },
             }
 
@@ -396,11 +396,7 @@ Answer:"""
             raise
         except Exception as e:
             # Wrap unexpected errors
-            raise RAGException(
-                f"Query execution failed: {e}",
-                error_type=type(e).__name__,
-                original_error=e,
-            ) from e
+            raise RAGException(f"Query execution failed: {e}") from e
 
     def register_loader(self, extension: str, loader: BaseLoader) -> None:
         """Register custom document loader for file extension.
