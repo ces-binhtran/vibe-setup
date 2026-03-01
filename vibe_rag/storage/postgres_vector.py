@@ -196,11 +196,10 @@ class PostgresVectorStore(BaseVectorStore):
                     # Add JSONB filter conditions
                     conditions = []
                     for key, value in filter_metadata.items():
-                        params.append(key)
-                        params.append(json.dumps(value))
-                        conditions.append(
-                            f"metadata->>${len(params)-1} = ${len(params)}"
-                        )
+                        key_idx = len(params) + 1
+                        value_idx = len(params) + 2
+                        params.extend([key, json.dumps(value)])
+                        conditions.append(f"metadata->>${key_idx} = ${value_idx}")
 
                     query += " WHERE " + " AND ".join(conditions)
 
