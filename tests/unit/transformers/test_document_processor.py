@@ -2,11 +2,12 @@
 
 
 import pytest
+from unittest.mock import Mock
 from langchain_text_splitters import CharacterTextSplitter
 
 from vibe_rag.models import Document
 from vibe_rag.transformers.document import DocumentProcessor
-from vibe_rag.utils.errors import ConfigurationError
+from vibe_rag.utils.errors import ConfigurationError, DocumentProcessingError
 
 
 def test_document_processor_init_default():
@@ -43,15 +44,14 @@ def test_document_processor_init_invalid_strategy():
         DocumentProcessor(strategy="invalid_strategy")
 
 
-@pytest.mark.asyncio
-async def test_document_processor_process_basic():
+def test_document_processor_process_basic():
     """Test basic document processing."""
     processor = DocumentProcessor(strategy="fixed", chunk_size=20, chunk_overlap=5)
 
     content = "This is a test document with some content to chunk."
     metadata = {"source_file": "test.txt", "file_type": "text"}
 
-    chunks = await processor.process(content, metadata)
+    chunks = processor.process(content, metadata)
 
     assert len(chunks) > 0
     assert all(isinstance(chunk, Document) for chunk in chunks)
@@ -59,15 +59,14 @@ async def test_document_processor_process_basic():
     assert all(chunk.metadata.get("source_file") == "test.txt" for chunk in chunks)
 
 
-@pytest.mark.asyncio
-async def test_document_processor_process_metadata_enrichment():
+def test_document_processor_process_metadata_enrichment():
     """Test that chunks are enriched with chunk-specific metadata."""
     processor = DocumentProcessor(strategy="fixed", chunk_size=30, chunk_overlap=10)
 
     content = "A" * 100  # Simple repeating content
     metadata = {"source": "original"}
 
-    chunks = await processor.process(content, metadata)
+    chunks = processor.process(content, metadata)
 
     # Verify chunk metadata
     for i, chunk in enumerate(chunks):
@@ -81,26 +80,24 @@ async def test_document_processor_process_metadata_enrichment():
         assert chunk.metadata["source"] == "original"
 
 
-@pytest.mark.asyncio
-async def test_document_processor_process_empty_content():
+def test_document_processor_process_empty_content():
     """Test processing empty content."""
     processor = DocumentProcessor()
 
-    chunks = await processor.process("", {})
+    chunks = processor.process("", {})
 
     # Empty content should return empty list or single empty chunk
     # LangChain behavior may vary, just ensure it doesn't crash
     assert isinstance(chunks, list)
 
 
-@pytest.mark.asyncio
-async def test_document_processor_process_no_metadata():
+def test_document_processor_process_no_metadata():
     """Test processing without metadata."""
     processor = DocumentProcessor(strategy="recursive", chunk_size=50)
 
     content = "Some content without metadata."
 
-    chunks = await processor.process(content)
+    chunks = processor.process(content)
 
     assert len(chunks) > 0
     # Should still have chunk metadata even without source metadata
@@ -143,3 +140,39 @@ def test_document_processor_register_strategy_duplicate():
 
     # Restore original for other tests
     DocumentProcessor.register_strategy("fixed", CharacterTextSplitter)
+
+
+def test_document_processor_process_error_handling():
+    """Test DocumentProcessingError is raised on chunking failure."""
+    # Create a mock splitter that raises an exception
+    mock_splitter = Mock()
+    mock_splitter.split_text.side_effect = ValueError("Chunking failed")
+
+    processor = DocumentProcessor(text_splitter=mock_splitter)
+
+    with pytest.raises(DocumentProcessingError) as exc_info:
+        processor.process("test content")
+
+    assert "Failed to process document" in str(exc_info.value)
+    assert exc_info.value.error_type == "ValueError"
+    assert exc_info.value.original_error is not None
+
+
+def test_document_processor_process_unique_parent_id():
+    """Test that multiple calls generate different parent_doc_id."""
+    processor = DocumentProcessor(strategy="fixed", chunk_size=30, chunk_overlap=5)
+
+    content = "Same content for both calls"
+
+    chunks1 = processor.process(content)
+    chunks2 = processor.process(content)
+
+    # Different calls should have different parent_doc_id
+    parent_id1 = chunks1[0].metadata["parent_doc_id"]
+    parent_id2 = chunks2[0].metadata["parent_doc_id"]
+
+    assert parent_id1 != parent_id2
+
+    # All chunks from same call should have same parent_doc_id
+    assert all(chunk.metadata["parent_doc_id"] == parent_id1 for chunk in chunks1)
+    assert all(chunk.metadata["parent_doc_id"] == parent_id2 for chunk in chunks2)
