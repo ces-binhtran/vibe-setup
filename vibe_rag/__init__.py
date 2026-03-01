@@ -14,6 +14,8 @@ from vibe_rag.config.models import (
 from vibe_rag.engine import RAGEngine
 from vibe_rag.loaders import MarkdownLoader, PDFLoader, TextLoader
 from vibe_rag.models import Document
+from vibe_rag.modules.basic import BasicRAGModule
+from vibe_rag.quick import QuickSetup
 from vibe_rag.retrievers import VectorRetriever
 from vibe_rag.transformers import DocumentProcessor
 from vibe_rag.utils.errors import (
@@ -33,6 +35,8 @@ __all__ = [
     "__version__",
     "Document",
     "RAGEngine",
+    "QuickSetup",
+    "BasicRAGModule",
     "RAGConfig",
     "LLMConfig",
     "StorageConfig",
