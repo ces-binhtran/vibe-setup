@@ -3,6 +3,8 @@ name: vibe-rag-component
 description: Guide for implementing new pluggable components in vibe-rag framework - ensures adapter pattern and proper integration
 ---
 
+**Note:** This skill is loaded via file read (`.claude/skills/vibe-rag-component.md`) because Claude Code does not support project-local skill registration.
+
 # Implementing vibe-rag Components
 
 Use this skill when adding a new provider, storage backend, or pipeline component.
